@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>你好</title>
+</head>
+<body>
+    <div id="all" class="banner">
+        adsfsd{{name}}{{error}}
+    </div>
+</body>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el:'#all',
+        created(){
+            this.r();
+        },
+        methods:{
+            r(){
+                axios.get('/one').then(
+                    res=>{
+
+                    },
+                    error=>{
+
+                    }
+                )
+            }
+        }
+    })
+
+</script>
+</html>
