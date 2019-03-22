@@ -15,6 +15,22 @@ SPIDER_MODULES = ['Tang_poetry.spiders']
 NEWSPIDER_MODULE = 'Tang_poetry.spiders'
 
 
+
+USER_AGENT = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0;"
+
+ITEM_PIPELINES = {
+  'Tang_poetry.pipelines.TangPoetryPipeline':300,
+}
+
+MONGODB_HOST="127.0.0.1"
+MONGODB_PORT=27017
+# ITEM_PIPELINES = {
+#      # 'tutorial.pipelines.QQNewsPipeline': 300,
+#    'tutorial.pipelines.QQNewsMongoPipeline':400
+# }
+# MONGO_URI = 'mongodb://localhost:27017'
+# MONGO_DB = "qqNews" 
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'Tang_poetry (+http://www.yourdomain.com)'
 

@@ -10,5 +10,6 @@ import scrapy
 
 class TangPoetryItem(scrapy.Item):
     # define the fields for your item here like:
+    author = scrapy.Field()
     content = scrapy.Field()
     pass
