@@ -1,9 +1,14 @@
 from flask import Flask,render_template,request,redirect,url_for,abort,jsonify
 from pymongo import MongoClient
 
-client=MongoClient('localhost',27017)
+
 app = Flask(__name__)
 
+def get_coll():
+    client=MongoClient('localhost',27017)
+    db = client['test']
+    x = db.t.find_one({},{"_id":0})
+    return x
 
 @app.route('/')
 def hello_world():
@@ -21,6 +26,7 @@ def hello_world():
 
 @app.route('/login')
 def login():
+
         return redirect(url_for('error'))
 @app.route('/error')
 def error():
@@ -29,6 +35,8 @@ def error():
 
 @app.route('/one',methods=['GET'])
 def one():
-    return jsonify({"name":"chenlin"})
+    x = get_coll()
+    print(type(x))
+    return jsonify(x)
 if __name__ == '__main__':
     app.run()
