@@ -14,15 +14,19 @@ class TangSpider(scrapy.Spider):
         for it in user:
             item['author']= it.xpath(".//div[@class='cont']//p//b//text()").extract()
             item['content']=it.xpath(".//div[@class='cont']//p[last()]//text()").extract()[0]
-            yield item
+            works_url = it.xpath(".//div[@class='cont']//p[last()]//a//@href").extract()
+            print(works_url)
+            return
+
+            # yield item
         # names = response.css(".left .sonspic .cont b::text").extract()
 
         # contents = response.css(
         #     ".left .sonspic .cont p:last-of-type::text").extract()
             # db.post.insert({name:names,contents:contents})
-        next_url = response.xpath("//a[@class='amore']//@href").extract()[0]
-        print(next_url)
-        next_url = unquote(next_url)
-        if next_url is not None:
-            yield response.follow(next_url, callback=self.parse)
+        # next_url = response.xpath("//a[@class='amore']//@href").extract()[0]
+        # print(next_url)
+        # next_url = unquote(next_url)
+        # if next_url is not None:
+        #     yield response.follow(next_url, callback=self.parse)
 
