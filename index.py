@@ -42,16 +42,17 @@ def getAllInfo(all):
     allTime = []
     allScenes = []
     allText = []
-    for it in works:
+    for it,index in works:
+        print(index)
         text = thu1.cut(it)
         for item in text:
-            allText.append(item[0])
-            if item[1] == 'ns':
-                allAddress.append(item[0])
-            if item[1] == 't':
-                allTime.append(item[0])
-            if item[1] == 's':
-                allScenes.append(item[0])
+            allText.append(item)
+            # if item[1] == 'ns':
+            #     allAddress.append(item[0])
+            # if item[1] == 't':
+            #     allTime.append(item[0])
+            # if item[1] == 's':
+            #     allScenes.append(item[0])
     #     print(text,allAddress,allTime,allTime)
     # address_counter = Counter(allAddress)
     # time_counter = Counter(allTime)
