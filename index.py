@@ -14,34 +14,49 @@ client = MongoClient('localhost', 27017)
 db = client['test']
 
 
+#获取初级
 def get_coll():
     all = db.t.find({}, {"_id": 0})
-    return all
-
+    frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
+    return frame
+def get_word():
+    frame = get_coll()
+    works = frame.works
+    str = ""
+    allWorks = str.join(works)
+    works_counter = Counter(allWorks)
+    maxTen = works_counter.most_common(12)
+def get_ten_authors():
+    frame = get_coll()
+    authors = frame.author
+    author_counter = Counter(authors)
+    maxAuthor = author_counter.most_common(10)
+def get_color():
+    season = ["春", "夏", "秋", "冬"]
+    colors = ["红", "黄", "绿", "蓝", "白", "黑", "紫", "赤", "灰"]
+    plant = ["梅", "竹", "兰", "菊", "松", "柳", "枫", "桃", "李", "梨"]
+    animal = ["龙", "虎", "马", "牛", "鸡", "狗","鼠", "兔", "猪", "猴", "蛇", "羊", "鱼", "猫"]
+    feeling = ["喜", "怒", "悲", "乐", "忧", "思", "惧"]
+    frame = get_coll():
+    works = frame.works
+    str = ""
+    allWorks = str.join(works)
+    colorDate=[[],[]]
+    for c in colors:
+        colorDate[0].append(s)
+        colorDate[1].append(works_counter[s])
+def get_thulac:
+    works = get_coll().works
+    thu1 = thulac.thulac()
+    allText = []
+    for it in 
 
 def getAllInfo(all):
     frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
     authors = frame.author
     titles = frame.title
     works = frame.works
-    str = ""
-    allWorks = str.join(works)
-    allAuthor = str.join(authors)
-    works_counter = Counter(allWorks)
-    maxTen = works_counter.most_common(12)
-    author_counter = Counter(authors)
-    maxAuthor = author_counter.most_common(10)
-    season = ["春", "夏", "秋", "冬"]
-    colors = ["红", "黄", "绿", "蓝", "白", "黑", "紫", "赤", "灰"]
-    plant = ["梅", "竹", "兰", "菊", "松", "柳", "枫", "桃", "李", "梨"]
-    animal = ["龙", "虎", "马", "牛", "鸡", "狗",
-              "鼠", "兔", "猪", "猴", "蛇", "羊", "鱼", "猫"]
-    feeling = ["喜", "怒", "悲", "乐", "忧", "思", "惧"]
     thu1 = thulac.thulac()
-    # text="我爱北京,,,天安门"
-    # text = thu1.cut(allWorks)
-    # scenes = jieba.analyse.extract_tags(allWorks,topK=10,withWeight=True,allowPOS=('t'))
-    # print(scenes)
     allAddress = []
     allTime = []
     allScenes = []
@@ -72,28 +87,6 @@ def getAllInfo(all):
     # print('\n')
     # for sce in maxScenes:
     #     print(sce)
-    # seasonData = [[],[]]
-    # colorData = [[],[]]
-    # plantData = [[],[]]
-    # animalData = [[],[]]
-    # feelData = [[],[]]
-    # for s in season:
-    #     seasonData[0].append(s)
-    #     seasonData[1].append(works_counter[s])
-    # for c in colors:
-    #     colorData[0].append(c)
-    #     colorData[1].append(works_counter[c])
-    # for p in plant:
-    #     plantData[0].append(p)
-    #     plantData[1].append(works_counter[p])
-    # for a in animal:
-
-    #     animalData[0].append(a)
-    #     animalData[1].append(works_counter[a])
-    # for f in feeling:
-    #     feelData[0].append(f)
-    #     feelData[1].append(works_counter[f])
-
     return maxAuthor
 
 
