@@ -1,23 +1,26 @@
-from flask import Flask,render_template,request,redirect,url_for,abort,jsonify
+from flask import Flask, render_template, request, redirect, url_for, abort, jsonify
 from pymongo import MongoClient
-from pandas import Series,DataFrame
+from pandas import Series, DataFrame
 import pandas as pd
+import numpy as np
 from collections import Counter
 import thulac
-import jieba
-import jieba.posseg as pseg
-import jieba.analyse
+# import jieba
+# import jieba.posseg as pseg
+# import jieba.analyse
 
 app = Flask(__name__)
-client=MongoClient('localhost',27017)
+client = MongoClient('localhost', 27017)
 db = client['test']
 
+
 def get_coll():
-    all = db.t.find({},{"_id":0})
+    all = db.t.find({}, {"_id": 0})
     return all
 
+
 def getAllInfo(all):
-    frame = pd.DataFrame(all,columns=['title','author','works'])
+    frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
     authors = frame.author
     titles = frame.title
     works = frame.works
@@ -28,11 +31,12 @@ def getAllInfo(all):
     maxTen = works_counter.most_common(12)
     author_counter = Counter(authors)
     maxAuthor = author_counter.most_common(10)
-    season = ["春","夏","秋","冬"]
-    colors = ["红","黄","绿","蓝","白","黑","紫","赤","灰"]
-    plant = ["梅","竹","兰","菊","松","柳","枫","桃","李","梨"]
-    animal = ["龙","虎","马","牛","鸡","狗","鼠","兔","猪","猴","蛇","羊","鱼","猫"]
-    feeling = ["喜","怒","悲","乐","忧","思","惧"]
+    season = ["春", "夏", "秋", "冬"]
+    colors = ["红", "黄", "绿", "蓝", "白", "黑", "紫", "赤", "灰"]
+    plant = ["梅", "竹", "兰", "菊", "松", "柳", "枫", "桃", "李", "梨"]
+    animal = ["龙", "虎", "马", "牛", "鸡", "狗",
+              "鼠", "兔", "猪", "猴", "蛇", "羊", "鱼", "猫"]
+    feeling = ["喜", "怒", "悲", "乐", "忧", "思", "惧"]
     thu1 = thulac.thulac()
     # text="我爱北京,,,天安门"
     # text = thu1.cut(allWorks)
@@ -68,8 +72,6 @@ def getAllInfo(all):
     # print('\n')
     # for sce in maxScenes:
     #     print(sce)
-    t = dict({"text":allText})
-    db.text.insert(t)
     # seasonData = [[],[]]
     # colorData = [[],[]]
     # plantData = [[],[]]
@@ -85,7 +87,7 @@ def getAllInfo(all):
     #     plantData[0].append(p)
     #     plantData[1].append(works_counter[p])
     # for a in animal:
-        
+
     #     animalData[0].append(a)
     #     animalData[1].append(works_counter[a])
     # for f in feeling:
@@ -94,9 +96,10 @@ def getAllInfo(all):
 
     return maxAuthor
 
+
 @app.route('/')
 def hello_world():
-    return render_template('index.html',name='chenlin')
+    return render_template('index.html', name='chenlin')
 
 # @app.route('/login',methods=['POST','GET'])
 # def login():
@@ -108,19 +111,25 @@ def hello_world():
 #             error='Invalid username/password'
 #     return render_template('index.html',error=error)
 
+
 @app.route('/login')
 def login():
 
-        return redirect(url_for('error'))
+    return redirect(url_for('error'))
+
+
 @app.route('/error')
 def error():
     abort(401)
-    return render_template('index.html',name='error')
+    return render_template('index.html', name='error')
 
-@app.route('/one',methods=['GET'])
+
+@app.route('/one', methods=['GET'])
 def one():
-    
-    return jsonify({"data":max})
-# if __name__ == '__main__':
-max = getAllInfo(get_coll())
-app.run()
+
+    return jsonify({"data": max})
+
+
+if __name__ == '__main__':
+    max = getAllInfo(get_coll())
+    app.run()
