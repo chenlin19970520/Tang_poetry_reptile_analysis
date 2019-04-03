@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 import thulac
+import re
 # import jieba
 # import jieba.posseg as pseg
 # import jieba.analyse
@@ -48,26 +49,30 @@ def getAllInfo(all):
     allText = []
     i = 0
     j = 0
+    file_open = open("peo1.txt", 'a+', encoding='utf-8')
     for it in works:
         text = thu1.cut(it)
         for item in text:
-            allText.append(item)
+            if item[0] != "，" and item[0] != "。":
+                file_open.write(item[0]+" ")
+                allText.append(item[0])
         if(i > 100):
             t = dict({"text": allText})
-            db.txt.insert(t)
+            db.txxt.insert(t)
             allText = []
             i = 0
         i = i + 1
         j = j + 1
         print(j)
-        # if item[1] == 'ns':
-        #     allText[0].name = item[1]
-        #     allText[0].text
-        #     allAddress.append(item[0])
-        # if item[1] == 't':
-        #     allTime.append(item[0])
-        # if item[1] == 's':
-        #     allScenes.append(item[0])
+    file_open.close()
+    # if item[1] == 'ns':
+    #     allText[0].name = item[1]
+    #     allText[0].text
+    #     allAddress.append(item[0])
+    # if item[1] == 't':
+    #     allTime.append(item[0])
+    # if item[1] == 's':
+    #     allScenes.append(item[0])
     #     print(text,allAddress,allTime,allTime)
     # address_counter = Counter(allAddress)
     # time_counter = Counter(allTime)
