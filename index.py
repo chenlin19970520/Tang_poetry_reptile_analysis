@@ -20,6 +20,11 @@ def get_coll():
     return all
 
 
+def ccc():
+    all = db.txxt.find({}, {"_id": 0})
+    print(all)
+
+
 def getAllInfo(all):
     frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
     authors = frame.author
@@ -147,5 +152,5 @@ def one():
 
 
 if __name__ == '__main__':
-    max = getAllInfo(get_coll())
+    ccc()
     app.run()
