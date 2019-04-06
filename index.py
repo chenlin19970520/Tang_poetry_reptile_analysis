@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 import thulac
+from gensim.models import word2vec
 # import jieba
 # import jieba.posseg as pseg
 # import jieba.analyse
@@ -37,7 +38,7 @@ def get_color():
     plant = ["梅", "竹", "兰", "菊", "松", "柳", "枫", "桃", "李", "梨"]
     animal = ["龙", "虎", "马", "牛", "鸡", "狗","鼠", "兔", "猪", "猴", "蛇", "羊", "鱼", "猫"]
     feeling = ["喜", "怒", "悲", "乐", "忧", "思", "惧"]
-    frame = get_coll():
+    frame = get_coll()
     works = frame.works
     str = ""
     allWorks = str.join(works)
@@ -45,11 +46,34 @@ def get_color():
     for c in colors:
         colorDate[0].append(s)
         colorDate[1].append(works_counter[s])
-def get_thulac:
+
+def get_thulac():
     works = get_coll().works
     thu1 = thulac.thulac()
     allText = []
-    for it in 
+
+def get_word_vector():
+    frame = get_coll()
+    works = frame.works
+    str = ""
+    allWorks = str.join(works)
+    sentences = word2vec.Text8Corpus(allWorks)
+    model = word2vec.Word2Vec(sentences,min_count=3,size=100,window=5,workers=4)
+    # for i in model.most_similar(u"天子"):
+    #     print("0")
+        # print(i[0],i[1])
+    # print(allWorks)
+    # all = db.thulac.find({},{"_id":0})
+    # frame = pd.DataFrame(all,columns=['text'])
+    # text = frame.text
+    # j = 0
+    # vector = []
+    # for i in text:
+    #     if j !=0:
+    #         i = np.array(i)
+    #         print(i)
+    #     j=j+1
+    # print(vector)
 
 def getAllInfo(all):
     frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
@@ -72,13 +96,6 @@ def getAllInfo(all):
             #     allTime.append(item[0])
             # if item[1] == 's':
             #     allScenes.append(item[0])
-    #     print(text,allAddress,allTime,allTime)
-    # address_counter = Counter(allAddress)
-    # time_counter = Counter(allTime)
-    # scenes_counter = Counter(allScenes)
-    # maxAddress = address_counter.most_common(10)
-    # maxTime = time_counter.most_common(10)
-    # maxScenes = scenes_counter.most_common(10)
     # for add in maxAddress:
     #     print(add)
     # print('\n')
@@ -87,7 +104,6 @@ def getAllInfo(all):
     # print('\n')
     # for sce in maxScenes:
     #     print(sce)
-    return maxAuthor
 
 
 @app.route('/')
@@ -124,5 +140,5 @@ def one():
 
 
 if __name__ == '__main__':
-    max = getAllInfo(get_coll())
+    get_word_vector()
     app.run()
