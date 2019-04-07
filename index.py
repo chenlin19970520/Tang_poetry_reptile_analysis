@@ -6,6 +6,7 @@ import numpy as np
 from collections import Counter
 import thulac
 from gensim.models import word2vec
+import re
 # import jieba
 # import jieba.posseg as pseg
 # import jieba.analyse
@@ -27,11 +28,13 @@ def get_word():
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
     maxTen = works_counter.most_common(12)
+    return maxTen
 def get_ten_authors():
     frame = get_coll()
     authors = frame.author
     author_counter = Counter(authors)
     maxAuthor = author_counter.most_common(10)
+    return maxAuthor
 def get_color():
     season = ["春", "夏", "秋", "冬"]
     colors = ["红", "黄", "绿", "蓝", "白", "黑", "紫", "赤", "灰"]
@@ -42,8 +45,9 @@ def get_color():
     works = frame.works
     str = ""
     allWorks = str.join(works)
+    works_counter = Counter(allWorks)
     colorDate=[[],[]]
-    for c in colors:
+    for s in colors:
         colorDate[0].append(s)
         colorDate[1].append(works_counter[s])
 
@@ -51,17 +55,51 @@ def get_thulac():
     works = get_coll().works
     thu1 = thulac.thulac()
     allText = []
+    i = 0
+    j = 0
+    file_open = open("peo1.txt", 'a+', encoding='utf-8')
+    for it in works:
+        text = thu1.cut(it)
+        for item in text:
+            if item[0] != "，" and item[0] != "。":
+                file_open.write(item[0]+" ")
+                allText.append(item[0])
+        if(i > 100):
+            t = dict({"text": allText})
+            db.txxt.insert(t)
+            allText = []
+            i = 0
+        i = i + 1
+        j = j + 1
+    file_open.close()
 
 def get_word_vector():
-    frame = get_coll()
-    works = frame.works
-    str = ""
-    allWorks = str.join(works)
-    sentences = word2vec.Text8Corpus(allWorks)
+    # frame = get_coll()
+    # works = frame.works
+    # str = ""
+    # allWorks = str.join(works)
+    sentences = word2vec.Text8Corpus("peo2.txt")
     model = word2vec.Word2Vec(sentences,min_count=3,size=100,window=5,workers=4)
+    model.save('poetry.model')
+    sam = model.most_similar('天子',topn=10)
+    print("关键词：天子\n")
+    for key in sam:
+        print(key[0],key[1])
+    sam1 = model.most_similar('寂寞',topn=10)
+    print("关键词：寂寞\n")
+    for key in sam1:
+        print(key[0],key[1])
+    sam2 = model.most_similar('李白',topn=10)
+    print("关键字：李白\n")
+    for key in sam2:
+        print(key[0],key[1])
+    sam3 = model.most_similar('明月',topn=10)
+    print("关键字：明月\n")
+    for key in sam3:
+        print(key[0],key[1])
     # for i in model.most_similar(u"天子"):
     #     print("0")
-        # print(i[0],i[1])
+    #     print(i[0],i[1])
     # print(allWorks)
     # all = db.thulac.find({},{"_id":0})
     # frame = pd.DataFrame(all,columns=['text'])
@@ -74,6 +112,10 @@ def get_word_vector():
     #         print(i)
     #     j=j+1
     # print(vector)
+def get_similarity():
+    model = word2vec.Word2Vec.load("poetry.model")
+    a = model.similarity('风','云')
+    print(a)
 
 def getAllInfo(all):
     frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
@@ -85,6 +127,7 @@ def getAllInfo(all):
     allTime = []
     allScenes = []
     allText = []
+
     for it,index in works:
         print(index)
         text = thu1.cut(it)
@@ -96,6 +139,25 @@ def getAllInfo(all):
             #     allTime.append(item[0])
             # if item[1] == 's':
             #     allScenes.append(item[0])
+
+    i = 0
+    j = 0
+
+    # if item[1] == 'ns':
+    #     allText[0].name = item[1]
+    #     allText[0].text
+    #     allAddress.append(item[0])
+    # if item[1] == 't':
+    #     allTime.append(item[0])
+    # if item[1] == 's':
+    #     allScenes.append(item[0])
+    #     print(text,allAddress,allTime,allTime)
+    # address_counter = Counter(allAddress)
+    # time_counter = Counter(allTime)
+    # scenes_counter = Counter(allScenes)
+    # maxAddress = address_counter.most_common(10)
+    # maxTime = time_counter.most_common(10)
+    # maxScenes = scenes_counter.most_common(10)
     # for add in maxAddress:
     #     print(add)
     # print('\n')
@@ -110,6 +172,11 @@ def getAllInfo(all):
 def hello_world():
     return render_template('index.html', name='chenlin')
 
+@app.route('/show')
+def get_show():
+    word = get_word()
+    author = get_ten_authors()
+    return jsonify({'word':word,'author':author})
 # @app.route('/login',methods=['POST','GET'])
 # def login():
 #     error = None

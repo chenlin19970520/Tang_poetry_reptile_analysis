@@ -1,29 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>你好</title>
+    <link rel="stylesheet" href="/static/css/index.css">
 </head>
+
 <body>
-    <div id="all" class="banner">
-        adsfsd{{name}}{{error}}
+    <div id="all">
+            <div class="title">
+                    <div class="font-one english">
+                        Data Analysis and Display of the Whole Tang Poetry
+                    </div>
+                    <div class="font-two china">
+                        关于全唐诗的数据分析展示
+                    </div>
+                </div>
+                <div class="contan">
+                    <div class="contan-title">
+                        全唐诗最多诗作诗人
+                    </div>
+                    <div class="line"></div>
+                    <div id="peotry-one" style="width: 100%;height: 10rem;"></div>
+                </div>
+                <div class="contan">
+                    <div class="contan-title">
+                        全唐诗出现最多的字
+                    </div>
+                </div>
+                <div class="contan">
+                    <div class="contan-title">
+                        唐诗中的季节
+                    </div>
+            
+                </div>
+                <div class="contan">
+                    <div class="contan-title">唐诗中的颜色</div>
+            
+                </div>
+                <div class="contan">
+                    <div class="contan-title">唐诗中的植物</div>
+            
+                </div>
+                <div class="contan">
+                    <div class="contan-title">唐诗中的动物</div>
+            
+                </div>
+                <div class="contan">
+                    <div class="contan-title">唐诗中的情感</div>
+                </div>
+
     </div>
+
 </body>
 <script src="/static/js/vue.js"></script>
 <script src="/static/js/axios.min.js"></script>
+<script src="/static/js/echat.js"></script>
 <script>
     var app = new Vue({
-        el:'#all',
-        created(){
-            this.r();
+        el: '#all',
+        data:{
+            show:{}
         },
-        methods:{
-            r(){
-                axios.get('/one').then(
-                    res=>{
+        created() {
+            this.getShow();
+        },
+        methods: {
+            createEchat(){
+                var myChart = echarts.init(document.getElementById("peotry-one"))
+                var option = {
+                    title:{
+                        text:"唐诗"
+                    },
+                    tooltip:{
 
+                    },
+                    legend:{
+                        data:['数量']
+                    },
+                    xAxis:{
+                        data:['陈小木','王体先 
+                        0']
+                    }
+                }
+            },
+            getShow(){
+                axios.get('/show').then(
+                    res=>{
+                        console.log(res)
+                        this.show = res
                     },
                     error=>{
 
@@ -34,4 +102,5 @@
     })
 
 </script>
+
 </html>
