@@ -35,7 +35,7 @@ def get_ten_authors():
     author_counter = Counter(authors)
     maxAuthor = author_counter.most_common(10)
     return maxAuthor
-def get_color():
+def get_season():
     season = ["春", "夏", "秋", "冬"]
     colors = ["红", "黄", "绿", "蓝", "白", "黑", "紫", "赤", "灰"]
     plant = ["梅", "竹", "兰", "菊", "松", "柳", "枫", "桃", "李", "梨"]
@@ -50,6 +50,34 @@ def get_color():
     for s in colors:
         colorDate[0].append(s)
         colorDate[1].append(works_counter[s])
+    return colorDate
+def get_colors():
+    red = ["红","赤","丹","朱","殷","绛","檀","翡","彤","绯","缇","茜"]
+    white=["白","素","皎","皓"]
+    yellow=["黄","湘"]
+    green=["青","绿","碧","翠","苍","綦",]
+    black=["暗","玄","乌","冥","墨","黑","褐","黛","黎","黯","皂","淄"]
+    blue=["蓝"]
+    purple=["紫"]
+    colors = {}
+    colors["red"] = get_single_color(red)
+    colors["white"]  = get_single_color(white)
+    colors["yellow"]  = get_single_color(yellow)
+    colors["yellow"]  = get_single_color(green)
+    colors["black"]  = get_single_color(black)
+    colors["blue"]  = get_single_color(blue)
+    colors["purple"]  = get_single_color(purple)
+    print(colors)
+
+def get_single_color(colors):
+    frame = get_coll()
+    works = frame.works
+    works_counter = Counter("".join(works))
+    colorDate = [[],[]]
+    for s in colors:
+        colorDate[0].append(s)
+        colorDate[1].append(works_counter[s])
+    return colorDate
 
 def get_thulac():
     works = get_coll().works
@@ -79,7 +107,7 @@ def get_word_vector():
     # str = ""
     # allWorks = str.join(works)
     sentences = word2vec.Text8Corpus("peo2.txt")
-    model = word2vec.Word2Vec(sentences,min_count=3,size=100,window=5,workers=4)
+    model = word2vec.Word2Vec(sentences,min_count=3,size=100,window=5,workers=4,seed=0)
     model.save('poetry.model')
     sam = model.most_similar('天子',topn=10)
     print("关键词：天子\n")
@@ -114,8 +142,10 @@ def get_word_vector():
     # print(vector)
 def get_similarity():
     model = word2vec.Word2Vec.load("poetry.model")
-    a = model.similarity('风','云')
-    print(a)
+    sam2 = model.most_similar('明月',topn=10)
+    print("关键字：明月\n")
+    for key in sam2:
+        print(key[0],key[1])
 
 def getAllInfo(all):
     frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
@@ -207,5 +237,5 @@ def one():
 
 
 if __name__ == '__main__':
-    get_word_vector()
+    get_colors()
     app.run()
