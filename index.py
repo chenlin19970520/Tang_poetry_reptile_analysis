@@ -28,56 +28,87 @@ def get_word():
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
     maxTen = works_counter.most_common(12)
-    return maxTen
+    db.show.insert_one({"word":maxTen})
 def get_ten_authors():
     frame = get_coll()
     authors = frame.author
     author_counter = Counter(authors)
     maxAuthor = author_counter.most_common(10)
-    return maxAuthor
+    db.show.insert_one({"author":maxAuthor})
 def get_season():
     season = ["春", "夏", "秋", "冬"]
-    colors = ["红", "黄", "绿", "蓝", "白", "黑", "紫", "赤", "灰"]
     plant = ["梅", "竹", "兰", "菊", "松", "柳", "枫", "桃", "李", "梨"]
     animal = ["龙", "虎", "马", "牛", "鸡", "狗","鼠", "兔", "猪", "猴", "蛇", "羊", "鱼", "猫"]
-    feeling = ["喜", "怒", "悲", "乐", "忧", "思", "惧"]
     frame = get_coll()
     works = frame.works
     str = ""
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
-    colorDate=[[],[]]
-    for s in colors:
-        colorDate[0].append(s)
-        colorDate[1].append(works_counter[s])
-    return colorDate
+    seasonDate= {}
+    for s in season:
+        seasonDate[s] = works_counter[s]
+    plantDate = {}
+    for p in plant:
+        plantDate[p] = works_counter[p]
+    animalDate = {}
+    for a in animal:
+        animalDate[a] = works_counter[a]
+    s = dict({"season":seasonDate})
+    p = dict({"plant":plantDate})
+    a = dict({"animal":animalDate})
+    all = [a,p,s]
+    db.show.insert_many(all)
+
+def get_feelings():
+    #like喜,fun乐,fear惧,angry怒,think思,sad悲,worry,忧
+    like=["喜","健","倩","贺","好","良","善"]
+    fun=["悦","欣","乐","怡","洽","畅","愉"]
+    fear=["谗","谤","患","罪","诈","惧","诬"]
+    angry=["怒","雷","吼","霆","霹","猛","轰"]
+    think=["思","忆","怀","恨","吟","逢","期"]
+    sad=["愁","恸","痛","寡","哀","伤","嗟"]
+    worry=["恤","忧","痾","虑","艰","遑","厄"]
+    feels={}
+    feels["喜"] = get_single_color(like)
+    feels["乐"] = get_single_color(fun)
+    feels["惧"] = get_single_color(fear)
+    feels["怒"] = get_single_color(angry)
+    feels["思"] = get_single_color(think)
+    feels["悲"] = get_single_color(sad)
+    feels["忧"] = get_single_color(worry)
+    f = dict({"feels": feels})
+    db.show.insert(f)
 def get_colors():
-    red = ["红","赤","丹","朱","殷","绛","檀","翡","彤","绯","缇","茜"]
-    white=["白","素","皎","皓"]
-    yellow=["黄","湘"]
-    green=["青","绿","碧","翠","苍","綦",]
-    black=["暗","玄","乌","冥","墨","黑","褐","黛","黎","黯","皂","淄"]
-    blue=["蓝"]
-    purple=["紫"]
+    red = ["红","赤","丹","朱","殷","绛","檀","翡","彤","绯","缇","茜","赪","赭","赩","赮","骍","纁"]
+    white=["白","素","皎","皓","皙"]
+    yellow=["黄","黈","缃"]
+    green=["绿","青","碧","翠","苍","綦",]
+    black=["黑","暗","玄","乌","冥","墨","褐","黛","黎","黯","皂","淄","黝"]
+    blue=["蓝","靛","雘"]
+    other=["紫","灰"]
     colors = {}
     colors["red"] = get_single_color(red)
     colors["white"]  = get_single_color(white)
-    colors["yellow"]  = get_single_color(yellow)
-    colors["yellow"]  = get_single_color(green)
+    colors["yellow"]  = get_single_color(yellow)    
+    colors["green"]  = get_single_color(green)
     colors["black"]  = get_single_color(black)
     colors["blue"]  = get_single_color(blue)
-    colors["purple"]  = get_single_color(purple)
-    print(colors)
+    colors["other"]  = get_single_color(other)
+    c = dict({"colors": colors})
+    db.show.insert(c)
 
 def get_single_color(colors):
     frame = get_coll()
     works = frame.works
     works_counter = Counter("".join(works))
     colorDate = [[],[]]
+    sum = 0
     for s in colors:
         colorDate[0].append(s)
-        colorDate[1].append(works_counter[s])
-    return colorDate
+        number = works_counter[s]
+        colorDate[1].append(number)
+        sum = sum + number
+    return sum
 
 def get_thulac():
     works = get_coll().works
@@ -237,5 +268,5 @@ def one():
 
 
 if __name__ == '__main__':
-    get_colors()
+    get_ten_authors()
     app.run()
