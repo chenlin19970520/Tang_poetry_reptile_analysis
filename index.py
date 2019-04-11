@@ -110,6 +110,35 @@ def get_single_color(colors):
         sum = sum + number
     return sum
 
+#thulac通用标记集
+'''
+    n/名词 np/人名 ns/地名 ni/机构名 nz/其它专名
+    m/数词 q/量词 mq/数量词 t/时间词 f/方位词 s/处所词
+    v/动词 a/形容词 d/副词 h/前接成分 k/后接成分 i/习语 
+    j/简称 r/代词 c/连词 p/介词 u/助词 y/语气助词
+    e/叹词 o/拟声词 g/语素 w/标点 x/其它
+'''
+def get_thulac_par():
+    works = get_coll().works
+    thu1 = thulac.thulac()
+    speech={}
+    i = 0
+    names = ["n","np","ns","ni","nz","m","q","mq","t","f","s","v","a","d","h","k","i","j","r","c","p","u","y","e","o","g","w","x"]
+    for it in works:
+        text = thu1.cut(it)
+        print(i)
+        for item in text:
+            for name in names:
+                if name == item[1]:
+                    if name in speech:
+                        speech[name].append(item[0])
+                    else:
+                        speech[name] = []
+        i=i+1
+    for s in speech:
+        t = dict({s:speech[s]})
+        db.speech.insert_one(t)
+    
 def get_thulac():
     works = get_coll().works
     thu1 = thulac.thulac()
@@ -231,13 +260,16 @@ def getAllInfo(all):
 
 @app.route('/')
 def hello_world():
-    return render_template('index.html', name='chenlin')
+    return render_template('index.html')
 
 @app.route('/show')
 def get_show():
-    word = get_word()
-    author = get_ten_authors()
-    return jsonify({'word':word,'author':author})
+    show = db.show.find({},{"_id":0})
+    sum = []
+    for i in show:
+        sum.append(i)
+    data = dict({"data":sum})
+    return jsonify(data)
 # @app.route('/login',methods=['POST','GET'])
 # def login():
 #     error = None
@@ -268,5 +300,5 @@ def one():
 
 
 if __name__ == '__main__':
-    get_ten_authors()
+    get_thulac_par()
     app.run()
