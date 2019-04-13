@@ -1,121 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>你好</title>
-    <link rel="stylesheet" href="/static/css/index.css">
-</head>
+    <link rel="stylesheet" href="/static/css/index.css" />
+  </head>
 
-<body>
+  <body>
     <div id="all">
-            <div class="title">
-                    <div class="font-one english">
-                        Data Analysis and Display of the Whole Tang Poetry
-                    </div>
-                    <div class="font-two china">
-                        关于全唐诗的数据分析展示
-                    </div>
-                </div>
-                <div class="contan">
-                    <div class="contan-title">
-                        全唐诗出现最多的字
-                    </div>
-                    <div class="line"></div>
-                    <div id="peotry-one" style="width: 100%;height: 30rem;"></div>
-                </div>
-                <div class="contan">
-                    <div class="contan-title">
-                        全唐诗最多诗作诗人
-                    </div>
-                    <div class="line"></div>
-                    <div id="peotry-two" style="width: 100%;height: 30rem;"></div>
-                </div>
-                <div class="contan">
-                    <div class="contan-title">
-                        唐诗中的季节
-                    </div>
-            
-                </div>
-                <div class="contan">
-                    <div class="contan-title">唐诗中的颜色</div>
-            
-                </div>
-                <div class="contan">
-                    <div class="contan-title">唐诗中的植物</div>
-            
-                </div>
-                <div class="contan">
-                    <div class="contan-title">唐诗中的动物</div>
-            
-                </div>
-                <div class="contan">
-                    <div class="contan-title">唐诗中的情感</div>
-                </div>
-
+      <div class="title">
+        <div class="font-one english">
+          Data Analysis and Display of the Whole Tang Poetry
+        </div>
+        <div class="font-two china">
+          关于全唐诗的数据分析展示
+        </div>
+      </div>
+      <div class="contan">
+        <div class="contan-title">
+          全唐诗出现最多的字
+        </div>
+        <div class="line"></div>
+        <div id="peotry-one" style="width: 100%;height: 30rem;"></div>
+      </div>
+      <div class="contan">
+        <div class="contan-title">
+          全唐诗最多诗作诗人
+        </div>
+        <div class="line"></div>
+        <div id="peotry-two" style="width: 100%;height: 30rem;"></div>
+      </div>
+      <div class="contan">
+        <div class="contan-title">
+          唐诗中的季节
+        </div>
+      </div>
+      <div class="contan">
+        <div class="contan-title">唐诗中的颜色</div>
+      </div>
+      <div class="contan">
+        <div class="contan-title">唐诗中的植物</div>
+      </div>
+      <div class="contan">
+        <div class="contan-title">唐诗中的动物</div>
+      </div>
+      <div class="contan">
+        <div class="contan-title">唐诗中的情感</div>
+      </div>
     </div>
-
-</body>
-<script src="/static/js/vue.js"></script>
-<script src="/static/js/axios.min.js"></script>
-<script src="/static/js/echat.js"></script>
-<script>
+  </body>
+  <script src="/static/js/vue.js"></script>
+  <script src="/static/js/axios.min.js"></script>
+  <script src="/static/js/echat.js"></script>
+  <script>
     var app = new Vue({
-        el: '#all',
-        data:{
-            show:{}
-        },
-        created() {
-            this.getShow();
-        },
-        mounted(){
-            this.createEchat();
-        },
-        methods: {
-            createEchat(){
-                var myChart = echarts.init(document.getElementById("peotry-one"))
-                var myChartTwo = echarts.init(document.getElementById("peotry-two"))
-                var option = {
-                    xAxis:{
-                        data:['不','人','山','风','无','一','日','云','有','何']
-                    },
-                    yAxis:{},
-                    series:[{
-                        name:'出现次数',
-                        type:'bar',
-                        data:[26213,20852,16019,15660,15644,15134,14906,13382,12593,12309]
-                    }]
-                }
-                var optionTwo = {
-                    xAxis:{
-                        data:['白居易','杜甫','李白','佚名','齐己','刘禹锡','元稹','李商隐','贯休','韦应物']
-                    },
-                    yAxis:{},
-                    series:[{
-                        name:"唐诗诗歌最多排行",
-                        type:'bar',
-                        data:[2643,1158,896,841,783,703,593,555,553,551]
-                    }]
-                }
-                myChart.setOption(option);
-                myChartTwo.setOption(optionTwo)
+      el: "#all",
+      data: {
+        show: {}
+      },
+      created() {
+        this.getShow();
+        this.getSimilarity();
+      },
+      mounted() {
+        this.createEchat();
+      },
+      methods: {
+        createEchat() {
+          var myChart = echarts.init(document.getElementById("peotry-one"));
+          var myChartTwo = echarts.init(document.getElementById("peotry-two"));
+          var option = {
+            xAxis: {
+              data: ["不", "人", "山", "风", "无", "一", "日", "云", "有", "何"]
             },
-            getShow(){
-                axios.get('/show').then(
-                    res=>{
-                        console.log(res)
-                        this.show = res
-                    },
-                    error=>{
-
-                    }
-                )
-            }
+            yAxis: {},
+            series: [
+              {
+                name: "出现次数",
+                type: "bar",
+                data: [
+                  26213,
+                  20852,
+                  16019,
+                  15660,
+                  15644,
+                  15134,
+                  14906,
+                  13382,
+                  12593,
+                  12309
+                ]
+              }
+            ]
+          };
+          var optionTwo = {
+            xAxis: {
+              data: [
+                "白居易",
+                "杜甫",
+                "李白",
+                "佚名",
+                "齐己",
+                "刘禹锡",
+                "元稹",
+                "李商隐",
+                "贯休",
+                "韦应物"
+              ]
+            },
+            yAxis: {},
+            series: [
+              {
+                name: "唐诗诗歌最多排行",
+                type: "bar",
+                data: [2643, 1158, 896, 841, 783, 703, 593, 555, 553, 551]
+              }
+            ]
+          };
+          myChart.setOption(option);
+          myChartTwo.setOption(optionTwo);
+        },
+        getShow() {
+          axios.get("/show").then(
+            res => {
+              console.log(res);
+              this.show = res;
+            },
+            error => {}
+          );
+        },
+        getSimilarity() {
+          axios.post("/similarity", { key: "明月" }).then(res => {
+            console.log(res);
+          });
         }
-    })
-
-</script>
-
+      }
+    });
+  </script>
 </html>

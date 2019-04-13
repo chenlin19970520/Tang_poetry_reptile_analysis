@@ -7,6 +7,7 @@ from collections import Counter
 import thulac
 from gensim.models import word2vec
 import re
+import json
 # import jieba
 # import jieba.posseg as pseg
 # import jieba.analyse
@@ -16,11 +17,14 @@ client = MongoClient('localhost', 27017)
 db = client['test']
 
 
-#获取初级
+# 获取全唐诗内容
 def get_coll():
     all = db.t.find({}, {"_id": 0})
     frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
     return frame
+# 获取字的排行存入数据库中
+
+
 def get_word():
     frame = get_coll()
     works = frame.works
@@ -28,23 +32,30 @@ def get_word():
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
     maxTen = works_counter.most_common(12)
-    db.show.insert_one({"word":maxTen})
+    db.show.insert_one({"word": maxTen})
+# 获取作者的排行存入数据库中
+
+
 def get_ten_authors():
     frame = get_coll()
     authors = frame.author
     author_counter = Counter(authors)
     maxAuthor = author_counter.most_common(10)
-    db.show.insert_one({"author":maxAuthor})
+    db.show.insert_one({"author": maxAuthor})
+# 获取季节，植物，动物的排行存入数据中
+
+
 def get_season():
     season = ["春", "夏", "秋", "冬"]
     plant = ["梅", "竹", "兰", "菊", "松", "柳", "枫", "桃", "李", "梨"]
-    animal = ["龙", "虎", "马", "牛", "鸡", "狗","鼠", "兔", "猪", "猴", "蛇", "羊", "鱼", "猫"]
+    animal = ["龙", "虎", "马", "牛", "鸡", "狗",
+              "鼠", "兔", "猪", "猴", "蛇", "羊", "鱼", "猫"]
     frame = get_coll()
     works = frame.works
     str = ""
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
-    seasonDate= {}
+    seasonDate = {}
     for s in season:
         seasonDate[s] = works_counter[s]
     plantDate = {}
@@ -53,22 +64,24 @@ def get_season():
     animalDate = {}
     for a in animal:
         animalDate[a] = works_counter[a]
-    s = dict({"season":seasonDate})
-    p = dict({"plant":plantDate})
-    a = dict({"animal":animalDate})
-    all = [a,p,s]
+    s = dict({"season": seasonDate})
+    p = dict({"plant": plantDate})
+    a = dict({"animal": animalDate})
+    all = [a, p, s]
     db.show.insert_many(all)
+# 获取唐诗情感排行
+
 
 def get_feelings():
-    #like喜,fun乐,fear惧,angry怒,think思,sad悲,worry,忧
-    like=["喜","健","倩","贺","好","良","善"]
-    fun=["悦","欣","乐","怡","洽","畅","愉"]
-    fear=["谗","谤","患","罪","诈","惧","诬"]
-    angry=["怒","雷","吼","霆","霹","猛","轰"]
-    think=["思","忆","怀","恨","吟","逢","期"]
-    sad=["愁","恸","痛","寡","哀","伤","嗟"]
-    worry=["恤","忧","痾","虑","艰","遑","厄"]
-    feels={}
+    # like喜,fun乐,fear惧,angry怒,think思,sad悲,worry,忧
+    like = ["喜", "健", "倩", "贺", "好", "良", "善"]
+    fun = ["悦", "欣", "乐", "怡", "洽", "畅", "愉"]
+    fear = ["谗", "谤", "患", "罪", "诈", "惧", "诬"]
+    angry = ["怒", "雷", "吼", "霆", "霹", "猛", "轰"]
+    think = ["思", "忆", "怀", "恨", "吟", "逢", "期"]
+    sad = ["愁", "恸", "痛", "寡", "哀", "伤", "嗟"]
+    worry = ["恤", "忧", "痾", "虑", "艰", "遑", "厄"]
+    feels = {}
     feels["喜"] = get_single_color(like)
     feels["乐"] = get_single_color(fun)
     feels["惧"] = get_single_color(fear)
@@ -78,30 +91,37 @@ def get_feelings():
     feels["忧"] = get_single_color(worry)
     f = dict({"feels": feels})
     db.show.insert(f)
+
+    # 获取唐诗颜色的排行
+
+
 def get_colors():
-    red = ["红","赤","丹","朱","殷","绛","檀","翡","彤","绯","缇","茜","赪","赭","赩","赮","骍","纁"]
-    white=["白","素","皎","皓","皙"]
-    yellow=["黄","黈","缃"]
-    green=["绿","青","碧","翠","苍","綦",]
-    black=["黑","暗","玄","乌","冥","墨","褐","黛","黎","黯","皂","淄","黝"]
-    blue=["蓝","靛","雘"]
-    other=["紫","灰"]
+    red = ["红", "赤", "丹", "朱", "殷", "绛", "檀", "翡", "彤",
+           "绯", "缇", "茜", "赪", "赭", "赩", "赮", "骍", "纁"]
+    white = ["白", "素", "皎", "皓", "皙"]
+    yellow = ["黄", "黈", "缃"]
+    green = ["绿", "青", "碧", "翠", "苍", "綦", ]
+    black = ["黑", "暗", "玄", "乌", "冥", "墨", "褐", "黛", "黎", "黯", "皂", "淄", "黝"]
+    blue = ["蓝", "靛", "雘"]
+    other = ["紫", "灰"]
     colors = {}
     colors["red"] = get_single_color(red)
-    colors["white"]  = get_single_color(white)
-    colors["yellow"]  = get_single_color(yellow)    
-    colors["green"]  = get_single_color(green)
-    colors["black"]  = get_single_color(black)
-    colors["blue"]  = get_single_color(blue)
-    colors["other"]  = get_single_color(other)
+    colors["white"] = get_single_color(white)
+    colors["yellow"] = get_single_color(yellow)
+    colors["green"] = get_single_color(green)
+    colors["black"] = get_single_color(black)
+    colors["blue"] = get_single_color(blue)
+    colors["other"] = get_single_color(other)
     c = dict({"colors": colors})
     db.show.insert(c)
+# 获取单独一个系列的排行
+
 
 def get_single_color(colors):
     frame = get_coll()
     works = frame.works
     works_counter = Counter("".join(works))
-    colorDate = [[],[]]
+    colorDate = [[], []]
     sum = 0
     for s in colors:
         colorDate[0].append(s)
@@ -110,20 +130,25 @@ def get_single_color(colors):
         sum = sum + number
     return sum
 
-#thulac通用标记集
+
+# thulac通用标记集
 '''
     n/名词 np/人名 ns/地名 ni/机构名 nz/其它专名
     m/数词 q/量词 mq/数量词 t/时间词 f/方位词 s/处所词
-    v/动词 a/形容词 d/副词 h/前接成分 k/后接成分 i/习语 
+    v/动词 a/形容词 d/副词 h/前接成分 k/后接成分 i/习语
     j/简称 r/代词 c/连词 p/介词 u/助词 y/语气助词
     e/叹词 o/拟声词 g/语素 w/标点 x/其它
 '''
+# 按类别获取分词结果分类
+
+
 def get_thulac_par():
     works = get_coll().works
     thu1 = thulac.thulac()
-    speech={}
+    speech = {}
     i = 0
-    names = ["n","np","ns","ni","nz","m","q","mq","t","f","s","v","a","d","h","k","i","j","r","c","p","u","y","e","o","g","w","x"]
+    names = ["n", "np", "ns", "ni", "nz", "m", "q", "mq", "t", "f", "s", "v", "a",
+             "d", "h", "k", "i", "j", "r", "c", "p", "u", "y", "e", "o", "g", "w", "x"]
     for it in works:
         text = thu1.cut(it)
         print(i)
@@ -134,11 +159,21 @@ def get_thulac_par():
                         speech[name].append(item[0])
                     else:
                         speech[name] = []
-        i=i+1
+        i = i+1
     for s in speech:
-        t = dict({s:speech[s]})
+        t = dict({s: speech[s]})
         db.speech.insert_one(t)
-    
+
+
+def get_word_class():
+    words = db.speech.find({}, {"_id": 0})
+
+
+'''
+    # 获取唐诗分词结果，一部分存入数据库，一部分写入peo.txt文本.
+'''
+
+
 def get_thulac():
     works = get_coll().works
     thu1 = thulac.thulac()
@@ -160,6 +195,8 @@ def get_thulac():
         i = i + 1
         j = j + 1
     file_open.close()
+# 词向量分析
+
 
 def get_word_vector():
     # frame = get_coll()
@@ -167,24 +204,25 @@ def get_word_vector():
     # str = ""
     # allWorks = str.join(works)
     sentences = word2vec.Text8Corpus("peo2.txt")
-    model = word2vec.Word2Vec(sentences,min_count=3,size=100,window=5,workers=4,seed=0)
+    model = word2vec.Word2Vec(sentences, min_count=3,
+                              size=100, window=5, workers=4, seed=0)
     model.save('poetry.model')
-    sam = model.most_similar('天子',topn=10)
+    sam = model.most_similar('天子', topn=10)
     print("关键词：天子\n")
     for key in sam:
-        print(key[0],key[1])
-    sam1 = model.most_similar('寂寞',topn=10)
+        print(key[0], key[1])
+    sam1 = model.most_similar('寂寞', topn=10)
     print("关键词：寂寞\n")
     for key in sam1:
-        print(key[0],key[1])
-    sam2 = model.most_similar('李白',topn=10)
+        print(key[0], key[1])
+    sam2 = model.most_similar('李白', topn=10)
     print("关键字：李白\n")
     for key in sam2:
-        print(key[0],key[1])
-    sam3 = model.most_similar('明月',topn=10)
+        print(key[0], key[1])
+    sam3 = model.most_similar('明月', topn=10)
     print("关键字：明月\n")
     for key in sam3:
-        print(key[0],key[1])
+        print(key[0], key[1])
     # for i in model.most_similar(u"天子"):
     #     print("0")
     #     print(i[0],i[1])
@@ -200,12 +238,18 @@ def get_word_vector():
     #         print(i)
     #     j=j+1
     # print(vector)
-def get_similarity():
+
+# 在线分析词向量
+
+
+def item_get_similarity(key):
     model = word2vec.Word2Vec.load("poetry.model")
-    sam2 = model.most_similar('明月',topn=10)
-    print("关键字：明月\n")
-    for key in sam2:
-        print(key[0],key[1])
+    sam2 = model.most_similar(key, topn=10)
+    return sam2
+    # print("关键字：明月\n")
+    # for key in sam2:
+    #     print(key[0],key[1])
+
 
 def getAllInfo(all):
     frame = pd.DataFrame(all, columns=['title', 'author', 'works'])
@@ -218,7 +262,7 @@ def getAllInfo(all):
     allScenes = []
     allText = []
 
-    for it,index in works:
+    for it, index in works:
         print(index)
         text = thu1.cut(it)
         for item in text:
@@ -229,7 +273,6 @@ def getAllInfo(all):
             #     allTime.append(item[0])
             # if item[1] == 's':
             #     allScenes.append(item[0])
-
     i = 0
     j = 0
 
@@ -262,13 +305,26 @@ def getAllInfo(all):
 def hello_world():
     return render_template('index.html')
 
+
+@app.route("/similarity", methods=['POST'])
+def get_similarity():
+    print("陈林")
+    k = request.get_data('key')
+    print(k)
+    key = "明月"
+    maxTen = item_get_similarity(k)
+    data = dict({"data": maxTen})
+    print(data)
+    return jsonify(data)
+
+
 @app.route('/show')
 def get_show():
-    show = db.show.find({},{"_id":0})
+    show = db.show.find({}, {"_id": 0})
     sum = []
     for i in show:
         sum.append(i)
-    data = dict({"data":sum})
+    data = dict({"data": sum})
     return jsonify(data)
 # @app.route('/login',methods=['POST','GET'])
 # def login():
@@ -300,5 +356,4 @@ def one():
 
 
 if __name__ == '__main__':
-    get_thulac_par()
     app.run()
