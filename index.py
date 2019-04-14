@@ -308,11 +308,10 @@ def hello_world():
 
 @app.route("/similarity", methods=['POST'])
 def get_similarity():
-    print("陈林")
     k = request.get_data('key')
-    print(k)
+    print(json.loads(k.decode("utf-8"))['key'])
     key = "明月"
-    maxTen = item_get_similarity(k)
+    maxTen = item_get_similarity(k['key'])
     data = dict({"data": maxTen})
     print(data)
     return jsonify(data)
