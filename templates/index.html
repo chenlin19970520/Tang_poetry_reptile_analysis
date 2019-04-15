@@ -61,8 +61,10 @@
         show: {}
       },
       created() {
-        this.getShow();
-        this.getSimilarity();
+        // this.getShow();
+        // this.getSimilarity();
+        // this.getDegrees();
+        this.getWord();
       },
       mounted() {
         this.createEchat();
@@ -133,6 +135,16 @@
         },
         getSimilarity() {
           axios.post("/similarity", { key: "明月" }).then(res => {
+            console.log(res);
+          });
+        },
+        getDegrees() {
+          axios.post("/degrees", { key: "明月 流水" }).then(res => {
+            console.log(res);
+          });
+        },
+        getWord() {
+          axios.post("/word", { word: "水" }).then(res => {
             console.log(res);
           });
         }

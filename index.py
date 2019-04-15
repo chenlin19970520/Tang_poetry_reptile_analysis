@@ -306,17 +306,48 @@ def hello_world():
     return render_template('index.html')
 
 
-@app.route("/similarity", methods=['POST'])
-def get_similarity():
-    k = request.get_data('key')
-    print(json.loads(k.decode("utf-8"))['key'])
-    key = "明月"
-    maxTen = item_get_similarity(k['key'])
-    data = dict({"data": maxTen})
-    print(data)
+def get_json(arr):
+    return json.loads((arr.decode("utf-8")))
+
+# 获取字或词的数量信息。
+@app.route("/word", methods=['POST'])
+def get_word_online():
+    words = get_json(request.get_data('word'))
+    print(words['word'])
+    frame = get_coll()
+    works = frame.works
+    str = ""
+    allWorks = str.join(works)
+    works_counter = Counter(allWorks)
+    result = works_counter[words['word']]
+    data = dict({"data": result})
+    print(result)
     return jsonify(data)
 
 
+# 获取词向量相近的前十接口
+
+
+@app.route("/similarity", methods=['POST'])
+def get_similarity():
+    k = get_json(request.get_data('key'))
+    print(k)
+    maxTen = item_get_similarity(k['key'])
+    data = dict({"data": maxTen})
+    return jsonify(data)
+
+# 获取词向量相近程度接口
+@app.route("/degrees", methods=['POST'])
+def get_degree():
+    degrees = get_json(request.get_data('key'))
+    arr = degrees['key'].split(" ")
+    model = word2vec.Word2Vec.load("poetry.model")
+    result = str(model.similarity(arr[0], arr[1]))
+    data = dict({"data": result})
+    print(result)
+    return jsonify(data)
+
+# 获取展示数据接口
 @app.route('/show')
 def get_show():
     show = db.show.find({}, {"_id": 0})
