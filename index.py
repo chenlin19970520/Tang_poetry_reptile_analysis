@@ -305,21 +305,35 @@ def getAllInfo(all):
 def hello_world():
     return render_template('index.html')
 
-
 def get_json(arr):
     return json.loads((arr.decode("utf-8")))
+
+def get_sort_rank(sort):
+    sortAll = db.speech.find({},{"_id":0,sort:1})
+    frame = pd.DataFrame(sortAll,columns=sort)
+    print(frame[2])
+
+#获取分类词向量的排行
+@app.route("/sort",methods=['POST'])
+
 
 # 获取字或词的数量信息。
 @app.route("/word", methods=['POST'])
 def get_word_online():
-    words = get_json(request.get_data('word'))
-    print(words['word'])
+    words = get_json(request.get_data('word'))['word']
+    arr = words.split("，")
+    print(arr)
     frame = get_coll()
     works = frame.works
     str = ""
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
-    result = works_counter[words['word']]
+    result = []
+    for r in arr:
+        res = []
+        res.append(r)
+        res.append(works_counter[r])
+        result.append(res)
     data = dict({"data": result})
     print(result)
     return jsonify(data)
@@ -386,4 +400,5 @@ def one():
 
 
 if __name__ == '__main__':
+    get_sort_rank('n')
     app.run()
