@@ -61,10 +61,11 @@
         show: {}
       },
       created() {
-        // this.getShow();
+        this.getShow();
         // this.getSimilarity();
         // this.getDegrees();
-        this.getWord();
+        // this.getWord();
+        this.getSort();
       },
       mounted() {
         this.createEchat();
@@ -147,6 +148,11 @@
           axios.post("/word", { word: "水，月" }).then(res => {
             console.log(res);
           });
+        },
+        getSort(){
+          axios.post("/sort",{sort:"ns"}).then(res=>{
+            console.log(res)
+          })
         }
       }
     });

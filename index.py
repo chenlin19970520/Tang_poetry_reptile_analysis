@@ -31,8 +31,8 @@ def get_word():
     str = ""
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
-    maxTen = works_counter.most_common(12)
-    db.show.insert_one({"word": maxTen})
+    maxTen = works_counter.most_common(102)
+    db.wordAll.insert_one({"word": maxTen})
 # 获取作者的排行存入数据库中
 
 
@@ -205,7 +205,7 @@ def get_word_vector():
     # allWorks = str.join(works)
     sentences = word2vec.Text8Corpus("peo2.txt")
     model = word2vec.Word2Vec(sentences, min_count=3,
-                              size=100, window=5, workers=4, seed=0)
+    size=100, window=5, workers=4, seed=0)
     model.save('poetry.model')
     sam = model.most_similar('天子', topn=10)
     print("关键词：天子\n")
@@ -309,13 +309,29 @@ def get_json(arr):
     return json.loads((arr.decode("utf-8")))
 
 def get_sort_rank(sort):
-    sortAll = db.speech.find({},{"_id":0,sort:1})
-    frame = pd.DataFrame(sortAll,columns=sort)
-    print(frame[2])
+    # sort = "ns"
+    sortAll = db.speech.find({},{"_id":0})
+    frame = pd.DataFrame(sortAll)
+    #     authors = frame.author
+    # author_counter = Counter(authors)
+    # maxAuthor = author_counter.most_common(10)
+    areas = frame[sort].tolist()
+    result = []
+    for a in areas:
+        if type(a).__name__!='float':
+            result.append(a)
+    print(result[0])
+    address_counter = Counter(result[0])
+    mxaAddress = address_counter.most_common(10)
+    # db.show.insert_one({sort: mxaAddress})
+    return mxaAddress
 
 #获取分类词向量的排行
 @app.route("/sort",methods=['POST'])
-
+def get_sort_word():
+    result = get_sort_rank(get_json(request.get_data('sort'))['sort'])
+    data = dict({"data":result})
+    return jsonify(data)
 
 # 获取字或词的数量信息。
 @app.route("/word", methods=['POST'])
@@ -400,5 +416,5 @@ def one():
 
 
 if __name__ == '__main__':
-    get_sort_rank('n')
+    get_word()
     app.run()
