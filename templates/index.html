@@ -1,160 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>你好</title>
-    <link rel="stylesheet" href="/static/css/index.css" />
-  </head>
 
-  <body>
-    <div id="all">
-      <div class="title">
-        <div class="font-one english">
-          Data Analysis and Display of the Whole Tang Poetry
-        </div>
-        <div class="font-two china">
-          关于全唐诗的数据分析展示
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>你好</title>
+  <link rel="stylesheet" href="/static/css/index.css" />
+</head>
+
+<body>
+  <div id="all">
+    <div class="title">
+      <div class="font-one english">
+        Data Analysis and Display of the Whole Tang Poetry
       </div>
-      <div class="contan">
-        <div class="contan-title">
-          全唐诗出现最多的字
-        </div>
-        <div class="line"></div>
-        <div id="peotry-one" style="width: 100%;height: 30rem;"></div>
-      </div>
-      <div class="contan">
-        <div class="contan-title">
-          全唐诗最多诗作诗人
-        </div>
-        <div class="line"></div>
-        <div id="peotry-two" style="width: 100%;height: 30rem;"></div>
-      </div>
-      <div class="contan">
-        <div class="contan-title">
-          唐诗中的季节
-        </div>
-      </div>
-      <div class="contan">
-        <div class="contan-title">唐诗中的颜色</div>
-      </div>
-      <div class="contan">
-        <div class="contan-title">唐诗中的植物</div>
-      </div>
-      <div class="contan">
-        <div class="contan-title">唐诗中的动物</div>
-      </div>
-      <div class="contan">
-        <div class="contan-title">唐诗中的情感</div>
+      <div class="font-two china">
+        关于全唐诗的数据分析展示
       </div>
     </div>
-  </body>
-  <script src="/static/js/vue.js"></script>
-  <script src="/static/js/axios.min.js"></script>
-  <script src="/static/js/echat.js"></script>
-  <script>
-    var app = new Vue({
-      el: "#all",
-      data: {
-        show: {}
-      },
-      created() {
-        this.getShow();
-        // this.getSimilarity();
-        // this.getDegrees();
-        // this.getWord();
-        this.getSort();
-      },
-      mounted() {
-        this.createEchat();
-      },
-      methods: {
-        createEchat() {
-          var myChart = echarts.init(document.getElementById("peotry-one"));
-          var myChartTwo = echarts.init(document.getElementById("peotry-two"));
-          var option = {
-            xAxis: {
-              data: ["不", "人", "山", "风", "无", "一", "日", "云", "有", "何"]
-            },
-            yAxis: {},
-            series: [
-              {
-                name: "出现次数",
-                type: "bar",
-                data: [
-                  26213,
-                  20852,
-                  16019,
-                  15660,
-                  15644,
-                  15134,
-                  14906,
-                  13382,
-                  12593,
-                  12309
-                ]
-              }
-            ]
-          };
-          var optionTwo = {
-            xAxis: {
+    <div class="contan">
+      <div class="contan-title">
+        全唐诗出现最多的字
+      </div>
+      <div class="line"></div>
+      <div id="peotry-one" style="width: 100%;height: 30rem;"></div>
+    </div>
+    <div class="contan" v-for="(item,index) in show">
+      <div class="contan-title" v-text="titles[index].name">
+      </div>
+      <div class="line"></div>
+      <div v-bind:id="'peotry'+index" style="width: 100%;height: 30rem;"></div>
+    </div>
+  </div>
+</body>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/axios.min.js"></script>
+<script src="/static/js/echat.js"></script>
+<script>
+  var app = new Vue({
+    el: "#all",
+    data: {
+      show: {},
+      titles: [
+        {
+          name: "唐诗中的情感"
+        }, {
+          name: "唐诗中的颜色"
+        }, {
+          name: "唐诗中的动物"
+        }, {
+          name: "唐诗中的植物"
+        }, {
+          name: "唐诗中的季节"
+        }, {
+          name: "唐诗中出现最多的字"
+        }, {
+          name: "诗作最多的诗人"
+        }, {
+          name: "唐诗中的地名"
+        }, {
+          name: "唐诗中的时间词"
+        }, {
+          name: "唐诗中的处所"
+        }
+      ]
+    },
+    created() {
+      this.getShow();
+      // this.getSimilarity();
+      // this.getDegrees();
+      // this.getWord();
+      this.getSort();
+    },
+    mounted() {
+      let vm = this
+      setTimeout(() => {
+        this.setOne(0, "feels","bar");
+        this.setOne(1, "colors","bar");
+        this.setOne(2, "animal","bar");
+        this.setOne(3, "plant","bar");
+        this.setOne(4, "season","pie");
+        this.setOne(5,"author","bar","two");
+        this.setOne(6,"ns","bar","two")
+      }, 500);
+      this.createEchat();
+    },
+    methods: {
+      createEchat() {
+        var myChart = echarts.init(document.getElementById("peotry-one"));
+        // var myChartTwo = echarts.init(document.getElementById("peotry-two"));
+        var option = {
+          xAxis: {
+            data: ["不", "人", "山", "风", "无", "一", "日", "云", "有", "何"]
+          },
+          yAxis: {},
+          series: [
+            {
+              name: "出现次数",
+              type: "bar",
               data: [
-                "白居易",
-                "杜甫",
-                "李白",
-                "佚名",
-                "齐己",
-                "刘禹锡",
-                "元稹",
-                "李商隐",
-                "贯休",
-                "韦应物"
+                26213,
+                20852,
+                16019,
+                15660,
+                15644,
+                15134,
+                14906,
+                13382,
+                12593,
+                12309
               ]
-            },
-            yAxis: {},
-            series: [
-              {
-                name: "唐诗诗歌最多排行",
-                type: "bar",
-                data: [2643, 1158, 896, 841, 783, 703, 593, 555, 553, 551]
-              }
+            }
+          ]
+        };
+        var optionTwo = {
+          xAxis: {
+            data: [
+              "白居易",
+              "杜甫",
+              "李白",
+              "佚名",
+              "齐己",
+              "刘禹锡",
+              "元稹",
+              "李商隐",
+              "贯休",
+              "韦应物"
             ]
-          };
-          myChart.setOption(option);
-          myChartTwo.setOption(optionTwo);
-        },
-        getShow() {
-          axios.get("/show").then(
-            res => {
-              console.log(res);
-              this.show = res;
-            },
-            error => {}
-          );
-        },
-        getSimilarity() {
-          axios.post("/similarity", { key: "明月" }).then(res => {
-            console.log(res);
-          });
-        },
-        getDegrees() {
-          axios.post("/degrees", { key: "明月 流水" }).then(res => {
-            console.log(res);
-          });
-        },
-        getWord() {
-          axios.post("/word", { word: "水，月" }).then(res => {
-            console.log(res);
-          });
-        },
-        getSort(){
-          axios.post("/sort",{sort:"ns"}).then(res=>{
-            console.log(res)
+          },
+          yAxis: {},
+          series: [
+            {
+              name: "唐诗诗歌最多排行",
+              type: "bar",
+              data: [2643, 1158, 896, 841, 783, 703, 593, 555, 553, 551]
+            }
+          ]
+        };
+        myChart.setOption(option);
+        // myChartTwo.setOption(optionTwo);
+      },
+      //设置为柱图
+      createE(item) {
+        var myChart = echarts.init(document.getElementById(item.id));
+        var option = {
+          xAxis: { data: item.x },
+          yAxis: {},
+          axisPointer: {
+            show: true
+          },
+          series: [
+            {
+              name: "aa",
+              type: "bar",
+              data: item.d
+            }
+          ]
+        }
+
+        myChart.setOption(option);
+      },
+      createR(item) {
+        var myChart = echarts.init(document.getElementById(item.id));
+        let data = [];
+        item.x.forEach((it,index)=>{
+          let i = {
+            value:item.d[index],
+            name:it
+          }
+          data.push(i)
+        })
+        var option = {
+          series: [
+            {
+              name: "饼图",
+              type: 'pie',
+              data: data,
+              itemStyle: {
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }
+          ]
+        };
+        myChart.setOption(option)
+      },
+
+      setOne(i, name, type,num) {
+        let t = this.show[i][name];
+        let data = {
+          x: [],
+          d: [],
+          id: "peotry" + i,
+          type: type
+        }
+        if(!num){
+          for (key in t) {
+          data.x.push(key)
+          data.d.push(t[key])
+        }          
+        }else if (num=='two'){
+          t.forEach(it=>{
+            data.x.push(it[0])
+            data.d.push(it[1])
           })
         }
+        console.log(data)
+        if (type == 'bar') {
+          this.createE(data)
+        } else if (type == 'pie') {
+          this.createR(data)
+        }
+      },
+      getShow() {
+        axios.get("/show").then(
+          res => {
+            console.log(res.data.data);
+            this.show = res.data.data;
+          },
+          error => { }
+        );
+      },
+      getSimilarity() {
+        axios.post("/similarity", { key: "明月" }).then(res => {
+          console.log(res);
+        });
+      },
+      getDegrees() {
+        axios.post("/degrees", { key: "明月 流水" }).then(res => {
+          console.log(res);
+        });
+      },
+      getWord() {
+        axios.post("/word", { word: "水，月" }).then(res => {
+          console.log(res);
+        });
+      },
+      getSort() {
+        axios.post("/sort", { sort: "ns" }).then(res => {
+          console.log(res)
+        })
       }
-    });
-  </script>
+    }
+  });
+</script>
+
 </html>

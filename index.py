@@ -361,7 +361,6 @@ def get_word_online():
 @app.route("/similarity", methods=['POST'])
 def get_similarity():
     k = get_json(request.get_data('key'))
-    print(k)
     maxTen = item_get_similarity(k['key'])
     data = dict({"data": maxTen})
     return jsonify(data)
@@ -416,5 +415,4 @@ def one():
 
 
 if __name__ == '__main__':
-    get_word()
     app.run()
