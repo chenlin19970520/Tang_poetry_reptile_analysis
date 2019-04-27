@@ -3,34 +3,65 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>你好</title>
+  <title>唐诗数据分析网站</title>
   <link rel="stylesheet" href="/static/css/index.css" />
 </head>
 
 <body>
-  <div id="all">
-    <div class="title">
-      <div class="font-one english">
-        Data Analysis and Display of the Whole Tang Poetry
-      </div>
-      <div class="font-two china">
-        关于全唐诗的数据分析展示
+  <div id="all" :class="tool=='Computer'?'min_width':''">
+    <div class="title" v-if="tool && tool == 'Computer'">
+      <div class="title-menu" v-cloak>
+        <div :class="type=='show'?'active ':''" @click="changeType" data-type="show">展示</div>
+        <div :class="type=='analysis'?'active':''" @click="changeType" data-type="analysis">分析</div>
+        <div :class="type=='explain'?'active':''" @click="changeType" data-type="explain">说明</div>
       </div>
     </div>
-    <div class="contan">
-      <div class="contan-title">
-        全唐诗出现最多的字
+    <div class="phone-title" v-if="tool && tool == 'Phone'">
+        <div class="title-menu" v-cloak>
+          <div :class="type=='show'?'active ':''" @click="changeType" data-type="show">展示</div>
+          <div :class="type=='analysis'?'active':''" @click="changeType" data-type="analysis">分析</div>
+          <div :class="type=='explain'?'active':''" @click="changeType" data-type="explain">说明</div>
+        </div>
       </div>
-      <div class="line"></div>
-      <div id="peotry-one" style="width: 100%;height: 30rem;"></div>
+    <div v-if="type=='explain'" class="explain">
+      本网站所有展示数据皆为全唐诗库的全唐诗数据分析所得，基于一些不可描述的原因。可能会出现数据是错误的情况。请理性看待。
+      <br>感谢全唐诗库，感谢thulac，感谢老师们的指导。
+      <br>本网站出现问题请联系@陈林，联系方式QQ893182141
+      <br>©2019
     </div>
-    <div class="contan" v-for="(item,index) in show">
-      <div class="contan-title" v-text="titles[index].name">
+    <div v-if="type=='analysis'" class="analysis">
+      <div class="ana-left">
+        <div class="left-menu" v-for="item,index in menu" @click="changeAnalysis">
+          <div v-cloak :class="index==currentMenu?'ana-active':'ana-no'" v-text="item.name" :data-index="index"></div>
+        </div>
       </div>
-      <div class="line"></div>
-      <div v-bind:id="'peotry'+index" style="width: 100%;height: 30rem;"></div>
+      <div class="ana-right" cloak>
+        <div class="input">
+          <img src="/static/img/sousuo.png" alt="">
+          <input type="text" @input="getInput" @focus="clear" @keyup.enter="submit" v-model="sValue">
+        </div>
+        <div class="explain" v-cloak v-for="item,index in explains" v-if="index==currentMenu" v-text="item.value">
+        </div>
+        <div class="error" v-text="error"></div>
+        <div class="degrees" v-text="degrees"></div>
+        <div id="analysis" v-if="!error" style="width: 90%;height: 22.5rem;margin: 1rem auto;"></div>
+      </div>
+    </div>
+    <div v-if="type=='show'">
+      <div class="contan" v-for="(item,index) in show">
+        <div class="contan-title" v-text="titles[index].name">
+        </div>
+        <div class="line"></div>
+        <div v-bind:id="'peotry'+index" style="width: 100%;height: 30rem;"></div>
+      </div>
+    </div>
+    <div id="loading" v-if="loading">
+      <div class="content">
+        <img src="/static/img/jiazaizhong.png" alt="">
+        <div>正在加载中...</div>
+      </div>
     </div>
   </div>
 </body>
@@ -42,6 +73,42 @@
     el: "#all",
     data: {
       show: {},
+      type: "analysis",
+      tool:"", //工具，判断是使用的啥子，电脑或者手机
+      loading: false, //控制加载页
+      sValue: "",
+      currentMenu: 1,
+      degrees:"",
+      error:"",
+      menu: [
+        {
+          name: "关于字的搜索",
+          value: "word"
+        }, {
+          name:"关于词的搜索",
+        },{
+          name: "关于词向量的搜索",
+          value: "terms"
+        },{
+          name:"词语之间的相似度"
+        },{
+          name:"不同词性的搜索"
+        }
+      ],
+      explains: [
+        {
+          value: "这里可以输入一个或多个字，按中文状态下逗号隔开。可以得到该字组在唐诗中的数量展示图。（请输入有效字）"
+        }, 
+        {
+          value: "这里可以输入一个或多个词，按中文状态下逗号隔开。可以得到该词组在唐诗中的数量展示图。（请输入有效字）"
+        },{
+          value: "这里可以输入一个或词语，可以得到该词语在唐诗中与该词语相似的词语的前十位的数量展示图。（请输入有效词）。该图数据保留三位小数，已按从大到小顺序排列"
+        },{
+          value:"这里需要输入两个词语，来比较它们在唐诗中的相似程度。"
+        },{
+          value:"这里数据是根据thulac分词工具得到。可以输入的信息有 n/名词 np/人名 ns/地名 ni/机构名 nz/其它专名 m/数词 q/量词 mq/数量词 t/时间词 f/方位词 s/处所词 v/动词 a/形容词 d/副词 h/前接成分 k/后接成分 i/习语 j/简称 r/代词 c/连词 p/介词 u/助词 y/语气助词 e/叹词 o/拟声词 g/语素 w/标点 x/其它,请输入它们的代表字符，且每次只能输入一个"
+        }
+      ],
       titles: [
         {
           name: "唐诗中的情感"
@@ -68,25 +135,146 @@
     },
     created() {
       this.getShow();
+      this.isCheck()
+      // this.isCheck();
       // this.getSimilarity();
       // this.getDegrees();
       // this.getWord();
-      this.getSort();
+      // this.getSort();
     },
     mounted() {
       let vm = this
-      setTimeout(() => {
-        this.setOne(0, "feels","bar");
-        this.setOne(1, "colors","bar");
-        this.setOne(2, "animal","bar");
-        this.setOne(3, "plant","bar");
-        this.setOne(4, "season","pie");
-        this.setOne(5,"author","bar","two");
-        this.setOne(6,"ns","bar","two")
-      }, 500);
       this.createEchat();
     },
+    watch: {
+      type(newval) {
+        if (newval == 'show') {
+          this.goShow();
+        }
+      }
+    },
     methods: {
+      isCheck(){
+        console.log('aa')
+        let info = navigator.userAgent
+        let isAndroid = info.indexOf("Android")>-1 || info.indexOf('Adr')>-1
+        let isIos = info.indexOf("iPhone")>-1
+        let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+        if(flag){
+          this.tool = "Phone"
+        }else(
+          this.tool = "Computer"
+        )
+      },
+      clear(){
+        this.error = ""
+        this.degrees = ""
+      },
+      getInput() {
+        this.clear();
+      },
+      //切换分析左边的菜单函数 
+      changeAnalysis(e) {
+        let index = e.target.dataset.index;
+        this.currentMenu = index;
+        this.sValue = "";
+        this.clear();
+        // this.clearE();
+      },
+      clearE(){
+        var myChart = echarts.init(document.getElementById("anay"));
+        myChart.clear();
+        var option = {
+          xAxis: { data: [] },
+          yAxis: {},
+          axisPointer: {
+            show: true
+          },
+          series: [
+            {
+              name: "aa",
+              type: "bar",
+              data: [],
+              label: {
+                normal: {
+                  show: true,
+                  position: 'top'
+                }
+              },
+            }
+          ]
+        }
+
+        myChart.setOption(option);
+      },
+      //提交函数
+      submit() {
+        if (this.currentMenu == 0) {
+          let data = this.sValue.split("，");
+          data = data.filter(it => {
+            return it != ""
+          })
+          this.getWord(data, (it) => {
+            this.setAna("analysis", it)
+          })
+        } else if(this.currentMenu == 1){
+          let data = this.sValue.split("，");
+          data = data.filter(it=>{
+            return it != ""
+          })
+          this.getTrems(data,(it)=>{
+            this.setAna("analysis",it)
+          })
+        }else if(this.currentMenu == 2){
+          let data = this.sValue;
+          this.getSimilarity(data,(it)=>{
+            it.forEach(item=>{
+              console.log(item,item[1])
+              item[1] = item[1].toFixed(3)
+            })
+            this.setAna("analysis",it)
+          })
+        }else if(this.currentMenu == 3){
+          let data = this.sValue.split("，");
+          if(data.length!=2){
+            this.error = "出错啦请输入正确的词语"
+            return
+          }
+          this.getDegrees(data,(it)=>{
+            this.degrees="这两个词语在唐诗中的相似度是"+it
+          })
+        }else if(this.currentMenu == 4){
+          let data = this.rt(this.sValue)
+          this.getSort(data,(it=>{
+            this.setAna("analysis",it)
+          }))
+        }
+      },
+      //去掉前后空格
+      rt(value){
+        let r = value.replace(/(^\s*)|(\s*$)/g,"")
+        return r
+      },
+      //分析时，整理数据
+
+      setAna(id, items) {
+        let data = {
+          x: [],
+          d: [],
+          id: id,
+          type: "bar"
+        }
+        items.forEach(it => {
+          data.x.push(it[0])
+          data.d.push(it[1])
+        })
+        this.createE(data)
+      },
+      changeType(e) {
+        let t = e.target.dataset.type;
+        this.type = t
+        console.log(e.target.dataset.type)
+      },
       createEchat() {
         var myChart = echarts.init(document.getElementById("peotry-one"));
         // var myChartTwo = echarts.init(document.getElementById("peotry-two"));
@@ -154,7 +342,13 @@
             {
               name: "aa",
               type: "bar",
-              data: item.d
+              data: item.d,
+              label: {
+                normal: {
+                  show: true,
+                  position: 'top'
+                }
+              },
             }
           ]
         }
@@ -164,10 +358,10 @@
       createR(item) {
         var myChart = echarts.init(document.getElementById(item.id));
         let data = [];
-        item.x.forEach((it,index)=>{
+        item.x.forEach((it, index) => {
           let i = {
-            value:item.d[index],
-            name:it
+            value: item.d[index],
+            name: it
           }
           data.push(i)
         })
@@ -189,60 +383,111 @@
         };
         myChart.setOption(option)
       },
-
-      setOne(i, name, type,num) {
+      //i是在数组中的位置。j是需要渲染的id,名字，类别，数据类型，bar图形方向；
+      setOne(i, j, name, type, num) {
         let t = this.show[i][name];
+        if(name=='word'){
+          t.splice(0,2)
+        }
         let data = {
           x: [],
           d: [],
-          id: "peotry" + i,
+          id: "peotry" + j,
           type: type
         }
-        if(!num){
+        if (!num) {
           for (key in t) {
-          data.x.push(key)
-          data.d.push(t[key])
-        }          
-        }else if (num=='two'){
-          t.forEach(it=>{
+            data.x.push(key)
+            data.d.push(t[key])
+          }
+        } else if (num == 'two') {
+          t.forEach(it => {
             data.x.push(it[0])
             data.d.push(it[1])
           })
         }
-        console.log(data)
         if (type == 'bar') {
           this.createE(data)
         } else if (type == 'pie') {
           this.createR(data)
         }
       },
+      goShow() {
+        setTimeout(() => {
+          this.setOne(0, 0, "feels", "bar");
+          this.setOne(1, 1, "colors", "bar");
+          this.setOne(2, 2, "animal", "bar");
+          this.setOne(3, 3, "plant", "bar");
+          this.setOne(4, 4, "season", "pie");
+          this.setOne(9, 5, "word", "bar", "two")
+          this.setOne(5, 6, "author", "bar", "two")
+          this.setOne(6, 7, "ns", "bar", "two")
+          this.setOne(7, 8, "t", "bar", "two")
+          this.setOne(8, 9, "s", "bar", "two")
+        }, 0);
+      },
       getShow() {
         axios.get("/show").then(
           res => {
-            console.log(res.data.data);
+            // console.log(res.data.data);
+            // let word = res.data.data[9];
+            // console.log(word)
+            //  res.data.data.splice(6,0,res.data.data[9])
             this.show = res.data.data;
+            this.goShow()
           },
           error => { }
         );
       },
-      getSimilarity() {
-        axios.post("/similarity", { key: "明月" }).then(res => {
-          console.log(res);
+      getSimilarity(data,cb) {
+        this.loading = true
+        axios.post("/similarity", { key: data}).then(res => {
+          this.loading = false
+          if(res.data.data=='该词语没有找到'){
+            this.error="出错啦，请输入其他词语吧"
+            return
+          }
+          cb && cb(res.data.data)
         });
       },
-      getDegrees() {
-        axios.post("/degrees", { key: "明月 流水" }).then(res => {
-          console.log(res);
+      getDegrees(data,cb) {
+        this.loading = true
+        axios.post("/degrees", { key:data}).then(res => {
+          this.loading = false
+          if(res.data.data=='该词语无法找到'){
+            this.error="出错啦,请输入其他词语吧"
+            return
+          }
+          cb && cb(res.data.data)
         });
       },
-      getWord() {
-        axios.post("/word", { word: "水，月" }).then(res => {
-          console.log(res);
+      getWord(data, cb) {
+        let word = {
+          word: data
+        }
+        this.loading = true;
+        axios.post("/word", JSON.stringify(word)).then(res => {
+          this.loading = false;
+          cb && cb(res.data.data)
         });
       },
-      getSort() {
-        axios.post("/sort", { sort: "ns" }).then(res => {
-          console.log(res)
+      getSort(data,cb) {
+        axios.post("/sort", { sort:data}).then(res => {
+          if(res.data.data=="error"){
+            this.error = "出错啦，请输入正确的字符";
+            return
+          }
+          cb && cb(res.data.data)
+        })
+      },
+      getTrems(data,cb){
+        let trems ={
+          trems:data
+        }
+        this.loading = true;
+        axios.post("/trems",JSON.stringify(trems)).then(res=>{
+          this.loading = false;
+          cb && cb(res.data.data)
         })
       }
     }
