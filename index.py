@@ -14,7 +14,7 @@ import json
 
 app = Flask(__name__)
 client = MongoClient('localhost', 27017)
-db = client['test']
+db = client['test2']
 
 
 # 获取全唐诗内容
