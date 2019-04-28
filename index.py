@@ -14,7 +14,7 @@ import json
 
 app = Flask(__name__)
 client = MongoClient('localhost', 27017)
-db = client['test2']
+db = client['test']
 
 
 # 获取全唐诗内容
@@ -204,7 +204,7 @@ def get_word_vector():
     # allWorks = str.join(works)
     sentences = word2vec.Text8Corpus("peo2.txt")
     model = word2vec.Word2Vec(sentences, min_count=3,
-    size=100, window=5, workers=4, seed=0)
+                              size=100, window=5, workers=4, seed=0)
     model.save('poetry.model')
     sam = model.most_similar('天子', topn=10)
     print("关键词：天子\n")
@@ -307,12 +307,14 @@ def getAllInfo(all):
 def hello_world():
     return render_template('index.html')
 
+
 def get_json(arr):
     return json.loads((arr.decode("utf-8")))
 
+
 def get_sort_rank(sort):
     # sort = "ns"
-    sortAll = db.speech.find({},{"_id":0})
+    sortAll = db.speech.find({}, {"_id": 0})
     frame = pd.DataFrame(sortAll)
     #     authors = frame.author
     # author_counter = Counter(authors)
@@ -320,7 +322,7 @@ def get_sort_rank(sort):
     areas = frame[sort].tolist()
     result = []
     for a in areas:
-        if type(a).__name__!='float':
+        if type(a).__name__ != 'float':
             result.append(a)
 
     address_counter = Counter(result[0])
@@ -328,14 +330,14 @@ def get_sort_rank(sort):
     # db.show.insert_one({sort: mxaAddress})
     return mxaAddress
 
-#获取分类词向量的排行
-@app.route("/sort",methods=['POST'])
+# 获取分类词向量的排行
+@app.route("/sort", methods=['POST'])
 def get_sort_word():
     try:
         result = get_sort_rank(get_json(request.get_data('sort'))['sort'])
-        data = dict({"data":result})
+        data = dict({"data": result})
     except:
-        data = dict({"data":"error"})
+        data = dict({"data": "error"})
     return jsonify(data)
 
 # 获取字或词的数量信息。
@@ -358,12 +360,12 @@ def get_word_online():
     data = dict({"data": result})
     return jsonify(data)
 
-#获取词数量接口
-@app.route("/trems",methods=['POST'])
+# 获取词数量接口
+@app.route("/trems", methods=['POST'])
 def get_trems():
     trems = get_json(request.get_data('trems'))['trems']
-    txt = open('peo2.txt',encoding='UTF-8').read()
-    new_txt= re.split(" ",txt)
+    txt = open('peo2.txt', encoding='UTF-8').read()
+    new_txt = re.split(" ", txt)
     result = Counter(new_txt)
     data = []
     for t in trems:
@@ -371,7 +373,7 @@ def get_trems():
         it.append(t)
         it.append(result[t])
         data.append(it)
-    data = dict({"data":data})
+    data = dict({"data": data})
     return jsonify(data)
 
 # 获取词向量相近的前十接口
@@ -393,7 +395,7 @@ def get_degree():
         result = str(model.similarity(degrees[0], degrees[1]))
         data = dict({"data": result})
     except:
-        data = dict({"data":"该词语无法找到"})
+        data = dict({"data": "该词语无法找到"})
     return jsonify(data)
 
 # 获取展示数据接口
@@ -432,6 +434,7 @@ def error():
 def one():
 
     return jsonify({"data": max})
+
 
 if __name__ == '__main__':
     app.run()
