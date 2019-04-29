@@ -31,8 +31,8 @@ def get_word():
     str = ""
     allWorks = str.join(works)
     works_counter = Counter(allWorks)
-    maxTen = works_counter.most_common(12)
-    db.show.insert_one({"word": maxTen})
+    maxTen = works_counter.most_common(102)
+    db.show.insert_one({"hundred": maxTen})
 # 获取作者的排行存入数据库中
 
 
